@@ -1,0 +1,38 @@
+# Trending Content Detection System Configuration
+
+server_config:
+  host: "0.0.0.0"
+  port: 8080
+  workers: 1
+  log_level: "INFO"
+
+model_config:
+  n_trees: 10
+  drift_threshold: 0.01
+  memory_size: 10000
+  max_features: 0.6
+  update_frequency: 1000
+  embedding_dim: 512
+  max_clusters: 20
+  time_decay_hours: 24
+
+storage_config:
+  model_path: "./models"
+  checkpoint_interval: 1000
+  auto_save: true
+  version_format: "v{}"
+
+gpu_config:
+  enabled: true
+  device_id: 0
+  fallback_cpu: true
+  memory_limit: 0.8
+
+logging_config:
+  level: "INFO"
+  file_path: "./logs/trend_service.log"
+  log_requests: true
+  log_predictions: true
+  log_drift_events: true
+  max_file_size: "100MB"
+  backup_count: 5
