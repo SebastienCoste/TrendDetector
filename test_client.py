@@ -119,8 +119,12 @@ def demo():
             result = client.predict_trend(embedding, velocity_features)
             
             # Extract outputs
-            predicted_trend = result['outputs'][0]['data'][0]
-            confidence = result['outputs'][1]['data'][0]
+            if 'outputs' in result:
+                predicted_trend = result['outputs'][0]['data'][0]
+                confidence = result['outputs'][1]['data'][0]
+            else:
+                print(f"   Error: {result}")
+                continue
             
             print(f"Prediction {i+1}: {predicted_trend} (confidence: {confidence:.3f})")
             
