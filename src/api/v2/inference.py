@@ -111,14 +111,14 @@ async def infer(
             elif input_tensor.name == "velocity_features":
                 velocity_data = np.array(input_tensor.data, dtype=np.float32)
                 velocity_features = {
-                    'download_velocity_1h': velocity_data[0],
-                    'download_velocity_24h': velocity_data[1],
-                    'like_velocity_1h': velocity_data[2],
-                    'like_velocity_24h': velocity_data[3],
-                    'dislike_velocity_1h': velocity_data[4],
-                    'dislike_velocity_24h': velocity_data[5],
-                    'rating_velocity_1h': velocity_data[6],
-                    'rating_velocity_24h': velocity_data[7]
+                    'download_velocity_1h': float(velocity_data[0]),
+                    'download_velocity_24h': float(velocity_data[1]),
+                    'like_velocity_1h': float(velocity_data[2]),
+                    'like_velocity_24h': float(velocity_data[3]),
+                    'dislike_velocity_1h': float(velocity_data[4]),
+                    'dislike_velocity_24h': float(velocity_data[5]),
+                    'rating_velocity_1h': float(velocity_data[6]),
+                    'rating_velocity_24h': float(velocity_data[7])
                 }
                 validate_velocity_features(velocity_features)
 
