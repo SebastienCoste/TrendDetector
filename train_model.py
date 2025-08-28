@@ -47,7 +47,7 @@ def main():
     # Initial training
     print("Starting initial training...")
     classifier.fit_initial(
-        vectors=vectors.tolist(),
+        vectors=[vectors[i] for i in range(len(vectors))],  # Convert to list of arrays
         trends=trends,
         timestamps=timestamps,
         velocity_features_list=velocity_features_list
