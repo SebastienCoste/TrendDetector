@@ -34,8 +34,8 @@ def validate_velocity_features(features: Dict[str, float]) -> bool:
         if feature not in features:
             raise ValueError(f"Missing required feature: {feature}")
         
-        if not isinstance(features[feature], (int, float)):
-            raise ValueError(f"Feature {feature} must be numeric")
+        if not isinstance(features[feature], (int, float, np.integer, np.floating)):
+            raise ValueError(f"Feature {feature} must be numeric, got {type(features[feature])}")
         
         if not np.isfinite(features[feature]):
             raise ValueError(f"Feature {feature} contains non-finite value")
