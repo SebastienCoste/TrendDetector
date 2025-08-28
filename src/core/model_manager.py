@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 
 from ..ml.adaptive_classifier import AdaptiveTrendClassifier
-from .config import Config
+from .config import AppConfig
 
 logger = logging.getLogger(__name__)
 
