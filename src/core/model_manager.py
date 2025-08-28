@@ -31,14 +31,14 @@ class ModelManager:
             )
         
         model = AdaptiveTrendClassifier(
-            n_trees=self.config.model_config.n_trees,
-            drift_threshold=self.config.model_config.drift_threshold,
-            memory_size=self.config.model_config.memory_size,
-            max_features=self.config.model_config.max_features,
-            update_frequency=self.config.model_config.update_frequency,
-            embedding_dim=self.config.model_config.embedding_dim,
-            max_clusters=self.config.model_config.max_clusters,
-            time_decay_hours=self.config.model_config.time_decay_hours,
+            n_trees=self.config.model_settings.n_trees,
+            drift_threshold=self.config.model_settings.drift_threshold,
+            memory_size=self.config.model_settings.memory_size,
+            max_features=self.config.model_settings.max_features,
+            update_frequency=self.config.model_settings.update_frequency,
+            embedding_dim=self.config.model_settings.embedding_dim,
+            max_clusters=self.config.model_settings.max_clusters,
+            time_decay_hours=self.config.model_settings.time_decay_hours,
             model_version=version
         )
         
