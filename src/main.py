@@ -36,9 +36,9 @@ async def lifespan(app: FastAPI):
         # Load configuration
         config_path = Path("config/config.yaml")
         if config_path.exists():
-            config = Config.from_yaml(str(config_path))
+            config = AppConfig.from_yaml(str(config_path))
         else:
-            config = Config()
+            config = AppConfig()
             config.to_yaml(str(config_path))
             logging.info(f"Created default config at {config_path}")
 
