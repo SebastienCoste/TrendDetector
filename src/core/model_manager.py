@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class ModelManager:
     """Manages multiple model versions and instances"""
 
-    def __init__(self, config: Config):
+    def __init__(self, config: AppConfig):
         self.config = config
         self.models: Dict[str, AdaptiveTrendClassifier] = {}
         self.model_versions: Dict[str, List[str]] = {}
