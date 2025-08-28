@@ -41,7 +41,7 @@ class LoggingConfig(BaseModel):
     backup_count: int = Field(default=5, description="Number of backup files")
 
 class AppConfig(BaseModel):
-    model_config: ModelConfig = Field(default_factory=ModelConfig)
+    model_settings: ModelConfig = Field(default_factory=ModelConfig)
     server_config: ServerConfig = Field(default_factory=ServerConfig)
     storage_config: StorageConfig = Field(default_factory=StorageConfig)
     gpu_config: GPUConfig = Field(default_factory=GPUConfig)
