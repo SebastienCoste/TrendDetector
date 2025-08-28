@@ -21,7 +21,7 @@ from .api.v2 import inference, update, stats
 from .api.middleware import LoggingMiddleware
 
 # Global configuration
-config: Config = None
+config: AppConfig = None
 model_manager: ModelManager = None
 
 @asynccontextmanager
