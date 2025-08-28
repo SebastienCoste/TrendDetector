@@ -40,7 +40,7 @@ class LoggingConfig(BaseModel):
     max_file_size: str = Field(default="100MB", description="Max log file size")
     backup_count: int = Field(default=5, description="Number of backup files")
 
-class Config(BaseModel):
+class AppConfig(BaseModel):
     model_config: ModelConfig = Field(default_factory=ModelConfig)
     server_config: ServerConfig = Field(default_factory=ServerConfig)
     storage_config: StorageConfig = Field(default_factory=StorageConfig)
