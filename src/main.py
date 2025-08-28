@@ -13,7 +13,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from .core.config import Config
+from .core.config import AppConfig
 from .core.logging import setup_logging
 from .core.model_manager import ModelManager, initialize_model_manager
 from .core.gpu_utils import initialize_gpu
