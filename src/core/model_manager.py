@@ -140,7 +140,7 @@ class ModelManager:
 # Global model manager instance
 model_manager: Optional[ModelManager] = None
 
-def initialize_model_manager(config: Config) -> ModelManager:
+def initialize_model_manager(config: AppConfig) -> ModelManager:
     """Initialize global model manager"""
     global model_manager
     model_manager = ModelManager(config)
