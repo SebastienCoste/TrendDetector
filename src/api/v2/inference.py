@@ -120,6 +120,8 @@ async def infer(
                     'rating_velocity_1h': float(velocity_data[6]),
                     'rating_velocity_24h': float(velocity_data[7])
                 }
+                print(f"DEBUG velocity_features: {velocity_features}")
+                print(f"DEBUG types: {[(k, type(v)) for k, v in velocity_features.items()]}")
                 validate_velocity_features(velocity_features)
 
         if embedding_vector is None:
