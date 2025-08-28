@@ -50,10 +50,10 @@ class AdaptiveTrendClassifier:
                  model_version: str = "v1"):
 
         # Core classifier
-        self.classifier = AdaptiveRandomForestClassifier(
+        self.classifier = ARFClassifier(
             n_models=n_trees,
             max_features=max_features,
-            random_state=42
+            seed=42
         )
 
         # Performance tracker
