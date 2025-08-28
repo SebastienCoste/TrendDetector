@@ -6,8 +6,8 @@ from collections import deque
 from dataclasses import dataclass
 from datetime import datetime
 
-from river import ensemble, metrics, preprocessing
-from river.ensemble import AdaptiveRandomForestClassifier
+from river import ensemble, metrics, preprocessing, forest
+from river.forest import ARFClassifier
 
 from ..core.gpu_utils import get_gpu_manager
 from .trend_memory import DynamicTrendMemory
