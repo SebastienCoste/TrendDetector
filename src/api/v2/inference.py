@@ -130,7 +130,6 @@ async def infer(
 
         # Get prediction
         classifier = model_manager.get_classifier(model_name)
-        print(f"DEBUG: About to predict with velocity_features: {velocity_features}")
         result = classifier.predict_trend(embedding_vector, velocity_features)
 
         # Convert probabilities to ordered list [upward, downward, neutral]
