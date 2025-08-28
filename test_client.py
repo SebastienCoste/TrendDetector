@@ -105,14 +105,14 @@ def demo():
         
         # Sample velocity features 
         velocity_features = [
-            np.random.exponential(10),  # download_velocity_1h
-            np.random.exponential(8),   # download_velocity_24h
-            np.random.exponential(5),   # like_velocity_1h
-            np.random.exponential(4),   # like_velocity_24h
-            np.random.exponential(2),   # dislike_velocity_1h
-            np.random.exponential(1),   # dislike_velocity_24h
-            np.random.normal(0, 0.1),   # rating_velocity_1h
-            np.random.normal(0, 0.08)   # rating_velocity_24h
+            float(np.random.exponential(10)),  # download_velocity_1h
+            float(np.random.exponential(8)),   # download_velocity_24h
+            float(np.random.exponential(5)),   # like_velocity_1h
+            float(np.random.exponential(4)),   # like_velocity_24h
+            float(np.random.exponential(2)),   # dislike_velocity_1h
+            float(np.random.exponential(1)),   # dislike_velocity_24h
+            float(np.random.normal(0, 0.1)),   # rating_velocity_1h
+            float(np.random.normal(0, 0.08))   # rating_velocity_24h
         ]
         
         try:
