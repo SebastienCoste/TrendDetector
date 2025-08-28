@@ -48,7 +48,7 @@ class AppConfig(BaseModel):
     logging_config: LoggingConfig = Field(default_factory=LoggingConfig)
 
     @classmethod
-    def from_yaml(cls, config_path: str) -> "Config":
+    def from_yaml(cls, config_path: str) -> "AppConfig":
         """Load configuration from YAML file"""
         with open(config_path, 'r') as f:
             config_data = yaml.safe_load(f)
@@ -58,4 +58,4 @@ class AppConfig(BaseModel):
         """Save configuration to YAML file"""
         Path(config_path).parent.mkdir(parents=True, exist_ok=True)
         with open(config_path, 'w') as f:
-            yaml.dump(self.dict(), f, default_flow_style=False)
+            yaml.dump(self.model_dump(), f, default_flow_style=False)
