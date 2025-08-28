@@ -109,9 +109,7 @@ async def infer(
                 embedding_vector = np.array(input_tensor.data, dtype=np.float32)
                 validate_embedding_vector(embedding_vector)
             elif input_tensor.name == "velocity_features":
-                print(f"DEBUG: Processing velocity_features tensor: {input_tensor}")
                 velocity_data = np.array(input_tensor.data, dtype=np.float32)
-                print(f"DEBUG: velocity_data: {velocity_data}")
                 velocity_features = {
                     'download_velocity_1h': float(velocity_data[0]),
                     'download_velocity_24h': float(velocity_data[1]),
@@ -122,7 +120,6 @@ async def infer(
                     'rating_velocity_1h': float(velocity_data[6]),
                     'rating_velocity_24h': float(velocity_data[7])
                 }
-                print(f"DEBUG velocity_features: {velocity_features}")
                 validate_velocity_features(velocity_features)
 
         if embedding_vector is None:
