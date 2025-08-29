@@ -30,16 +30,43 @@ class SyntheticDataGenerator:
             viral_dims = np.random.choice(dim, size=dim//10, replace=False)
             vector[viral_dims] *= 2.0
             return vector
-        elif content_type == "trending":
+        elif content_type == "boring":
             # Trending content has moderate amplification
             vector = np.random.randn(dim)
             trending_dims = np.random.choice(dim, size=dim//20, replace=False)
-            vector[trending_dims] *= 1.5
+            vector[trending_dims] *= 0.1
             return vector
         else:
             return np.random.randn(dim)
 
+
     def calculate_trend_from_vector_and_time(self,
+                                             vector: np.ndarray,
+                                             timestamp: float,
+                                             base_time: float,
+                                             threshold: float) -> str:
+        """Alternative trend calculation based on 10 hour/day-dependent vector values"""
+
+        # Time-based features
+        hour_of_day = int((timestamp % (24 * 3600)) / 3600)  # 0-23
+        day_of_week = int(timestamp // (24 * 3600)) % 7      # 0-6
+
+        # Deterministically select 10 indices based on hour and day
+        dim = vector.shape[0]
+        indices = [((hour_of_day * 31 + day_of_week * 17 + i * 13) % dim) for i in range(10)]
+
+        selected_values = vector[indices]
+        mean_value = np.mean(selected_values)
+
+        if mean_value > threshold:
+            return "upward"
+        elif mean_value < -1 * threshold:
+            return "downward"
+        else:
+            return "neutral"
+
+
+    def calculate_trend_from_vector_and_time_complicated(self,
                                            vector: np.ndarray,
                                            timestamp: float,
                                            base_time: float) -> str:
@@ -164,6 +191,7 @@ class SyntheticDataGenerator:
                         n_samples: int = 1000,
                         time_span_days: int = 30,
                         embedding_dim: int = 512,
+                        threshold: float = 0.2,
                         start_date: datetime = None) -> Tuple[List[np.ndarray], List[str], List[float], List[Dict[str, float]]]:
         """Generate complete synthetic dataset"""
 
@@ -178,21 +206,21 @@ class SyntheticDataGenerator:
         timestamps = []
         velocity_features_list = []
 
-        print(f"Generating {n_samples} samples over {time_span_days} days...")
+        print(f"Generating {n_samples} samples over {time_span_days} days starting {start_date}...")
 
         for i in range(n_samples):
             # Generate timestamp (uniformly distributed over time span)
             timestamp = base_timestamp + (end_timestamp - base_timestamp) * (i / n_samples)
 
             # Add some randomness to timestamps
-            timestamp += np.random.normal(0, 3600)  # ±1 hour noise
+            timestamp += np.random.normal(0, 7200) - 3600  # ±1 hour noise
 
             # Generate embedding vector
-            content_type = np.random.choice(["random", "viral", "trending"], p=[0.7, 0.15, 0.15])
+            content_type = np.random.choice(["random", "viral", "boring"], p=[0.7, 0.15, 0.15])
             vector = self.generate_embedding_vector(content_type, embedding_dim)
 
             # Calculate trend based on vector and time
-            trend = self.calculate_trend_from_vector_and_time(vector, timestamp, base_timestamp)
+            trend = self.calculate_trend_from_vector_and_time(vector, timestamp, base_timestamp, threshold)
 
             # Generate consistent velocity features
             velocity_features = self.generate_velocity_features(trend, timestamp)
@@ -249,13 +277,15 @@ def main():
     parser.add_argument("--days", type=int, default=30, help="Time span in days")
     parser.add_argument("--output", type=str, default="./test_data", help="Output directory")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--threshold", type=float, default=0.3, help="absolute  threshold of normal distribution defining upward/downward")
 
     args = parser.parse_args()
 
     generator = SyntheticDataGenerator(seed=args.seed)
     vectors, trends, timestamps, velocity_features_list = generator.generate_dataset(
         n_samples=args.samples,
-        time_span_days=args.days
+        time_span_days=args.days,
+        threshold=args.threshold,
     )
 
     generator.save_dataset(vectors, trends, timestamps, velocity_features_list, args.output)

@@ -2,16 +2,18 @@ import logging
 from typing import Optional, Any
 import numpy as np
 
+from src.core.config import GPUConfig
+
 logger = logging.getLogger(__name__)
 
 try:
-    import cupy as cp
+    # import cupy as cp #cupy isn't available on macOs, let's use torch instead
+    import torch
     GPU_AVAILABLE = True
     logger.info("GPU libraries loaded successfully")
 except ImportError as e:
     GPU_AVAILABLE = False
     logger.warning(f"GPU libraries not available: {e}")
-    cp = None
 
 class GPUManager:
     """Manages GPU operations with CPU fallback"""
@@ -24,8 +26,8 @@ class GPUManager:
 
         if self.gpu_enabled:
             try:
-                cp.cuda.Device(device_id).use()
-                self.device = cp.cuda.Device(device_id)
+                torch.cuda.Device(device_id).use()
+                self.device = torch.cuda.Device(device_id)
                 logger.info(f"GPU initialized: Device {device_id}")
             except Exception as e:
                 logger.error(f"GPU initialization failed: {e}")
@@ -39,7 +41,7 @@ class GPUManager:
         """Convert numpy array to GPU array"""
         if self.gpu_enabled:
             try:
-                return cp.asarray(array)
+                return torch.from_numpy(array).to(self.device)
             except Exception as e:
                 logger.warning(f"GPU conversion failed: {e}")
                 if self.fallback_cpu:
@@ -51,9 +53,10 @@ class GPUManager:
         """Convert GPU array to numpy array"""
         if self.gpu_enabled and hasattr(array, 'get'):
             try:
-                return array.get()
+                return array.cpu().numpy()
             except Exception as e:
                 logger.warning(f"CPU conversion failed: {e}")
+                raise
         return np.asarray(array)
 
     def cosine_similarity(self, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
@@ -64,11 +67,11 @@ class GPUManager:
                 Y_gpu = self.to_gpu(Y)
 
                 # Normalize vectors
-                X_norm = X_gpu / cp.linalg.norm(X_gpu, axis=1, keepdims=True)
-                Y_norm = Y_gpu / cp.linalg.norm(Y_gpu, axis=1, keepdims=True)
+                X_norm = X_gpu / torch.linalg.norm(X_gpu, axis=1, keepdims=True)
+                Y_norm = Y_gpu / torch.linalg.norm(Y_gpu, axis=1, keepdims=True)
 
                 # Compute similarity
-                similarity = cp.dot(X_norm, Y_norm.T)
+                similarity = torch.dot(X_norm, Y_norm.T)
                 return self.to_cpu(similarity)
             except Exception as e:
                 logger.warning(f"GPU cosine similarity failed: {e}")
@@ -84,9 +87,9 @@ class GPUManager:
         """Fit KMeans with GPU acceleration"""
         if self.gpu_enabled:
             try:
-                from cuml.cluster import KMeans
+                from .torch_kmeans import TorchKMeans
                 X_gpu = self.to_gpu(X)
-                kmeans = KMeans(n_clusters=n_clusters, **kwargs)
+                kmeans = TorchKMeans(n_clusters=n_clusters, **kwargs)
                 kmeans.fit(X_gpu)
                 return kmeans
             except Exception as e:
@@ -112,7 +115,7 @@ class GPUManager:
         """Get GPU memory information"""
         if self.gpu_enabled:
             try:
-                mempool = cp.get_default_memory_pool()
+                mempool = torch.get_default_memory_pool()
                 return {
                     "used_bytes": mempool.used_bytes(),
                     "total_bytes": mempool.total_bytes(),
@@ -124,13 +127,13 @@ class GPUManager:
 # Global GPU manager instance
 gpu_manager: Optional[GPUManager] = None
 
-def initialize_gpu(gpu_config: dict) -> GPUManager:
+def initialize_gpu(gpu_config: GPUConfig) -> GPUManager:
     """Initialize global GPU manager"""
     global gpu_manager
     gpu_manager = GPUManager(
-        gpu_enabled=gpu_config.get("enabled", True),
-        device_id=gpu_config.get("device_id", 0),
-        fallback_cpu=gpu_config.get("fallback_cpu", True)
+        gpu_enabled=gpu_config.enabled,
+        device_id=gpu_config.device_id,
+        fallback_cpu=gpu_config.fallback_cpu
     )
     return gpu_manager
 

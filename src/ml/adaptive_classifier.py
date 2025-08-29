@@ -159,10 +159,14 @@ class AdaptiveTrendClassifier:
 
         # Add all data to memory first
         for i, (vector, label, ts) in enumerate(zip(vectors, trends, timestamps)):
+            if i % 100 == 0 and i > 0:
+                logger.info(f"Processed {i} / {len(vectors)} vectors into trend memory")
             self.trend_memory.add_trend_sample(vector, label, ts)
 
         # Process each sample for training
         for i, (vector, label) in enumerate(zip(vectors, trends)):
+            if i % 100 == 0 and i > 0:
+                logger.info(f"Learned {i} / {len(vectors)} features")
             features = self._prepare_features(
                 vector,
                 velocity_features_list[i],

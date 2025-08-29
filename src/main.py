@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
         setup_logging(config.logging_config)
 
         # Initialize GPU
-        gpu_manager = initialize_gpu(config.gpu_config.dict())
+        gpu_manager = initialize_gpu(config.gpu_config)
         logging.info(f"GPU enabled: {gpu_manager.is_gpu_enabled}")
 
         # Initialize model manager

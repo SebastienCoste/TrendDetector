@@ -26,14 +26,17 @@ The system implements a microservices architecture with the following components
 
 ### 1. Install Dependencies
 
+conda will probably require to be out of VPN for throttling
 ```bash
+conda create --name TrendDetector #Or alternatively, create it from IntelliJ 
+conda activate TrendDetector
 pip install -r requirements.txt
 ```
 
 ### 2. Generate Test Data
 
 ```bash
-python scripts/generate_synthetic_data.py --samples 1000 --output ./test_data
+python scripts/generate_synthetic_data.py --samples 10000 --output ./test_data
 ```
 
 ### 3. Start the Service
@@ -192,7 +195,7 @@ flake8 src/
 ```
 
 ### Performance Testing
-
+//TODO
 ```bash
 python scripts/generate_synthetic_data.py --samples 10000
 python -m pytest tests/test_performance.py
