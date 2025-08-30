@@ -288,13 +288,11 @@ class AdaptiveTrendClassifier:
         if self.is_fitted:
             self.classifier.learn_one(features, actual_trend)
 
+        drift_detected = False
         # Update accuracy metric
         if predicted_trend:
             self.accuracy_metric.update(actual_trend, predicted_trend)
-
-        # Simple drift detection based on prediction errors
-        drift_detected = False
-        if predicted_trend:
+            # Simple drift detection based on prediction errors
             error = 1.0 if predicted_trend != actual_trend else 0.0
             # Simple drift detection: if error rate is high
             if error > 0 and self.prediction_count % 100 == 0:

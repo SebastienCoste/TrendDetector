@@ -148,10 +148,24 @@ def demo(model_name, predictions):
                 print(f"   Error: {result}")
                 continue
             
-            print(f"#{i+1}: {predicted_trend} (conf: {confidence:.3f})."
+            print(f"#{i+1} {'YES' if predicted_trend == trend_from_data_generator else 'NOP'}: {predicted_trend} (conf: {confidence:.3f})."
                   f" Truth: {trend_from_data_generator} (mean: {generated_mean:.3f}). E: sum: {e_sum:.3f}, mean: {e_mean:.3f}, var: {e_var:.3f}")
             if trend_from_data_generator == predicted_trend:
                 correct_predictions += 1
+
+            # Send feedback from time to time, to inform the model how it performs
+            # In reality, it would send feedback everytime a trend is acknowledged
+            if i%10 == 0:
+                client.update_model(
+                    updates=[{
+                        'embedding_vector': embedding.tolist(),
+                        'actual_trend': trend_from_data_generator,
+                        'predicted_trend': predicted_trend,
+                        'timestamp': inference_time,
+                        'velocity_features': generated_velocity
+                    }],
+                    model_name=model_name,
+                )
         except Exception as e:
             print(f"Prediction {i+1} failed: {e}")
 

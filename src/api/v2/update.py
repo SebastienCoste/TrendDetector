@@ -33,12 +33,13 @@ async def update_model(
                 embedding_vector = np.array(update['embedding_vector'], dtype=np.float32)
                 actual_trend = update['actual_trend']
                 predicted_trend = update.get('predicted_trend')
-                velocity_features = update.get('velocity_features')
+                velocity_features = update.get('velocity_features', {})
                 timestamp = update.get('timestamp')
 
                 # Validate inputs
                 validate_embedding_vector(embedding_vector)
                 validate_trend_label(actual_trend)
+                validate_trend_label(predicted_trend)
 
                 # Update model
                 drift_detected = classifier.update_with_feedback(

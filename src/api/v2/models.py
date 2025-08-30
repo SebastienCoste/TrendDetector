@@ -64,7 +64,7 @@ class UpdateRequest(BaseModel):
 
     @validator('updates')
     def validate_updates(cls, v):
-        required_fields = ['embedding_vector', 'actual_trend']
+        required_fields = ['embedding_vector', 'actual_trend', 'timestamp']
         for update in v:
             for field in required_fields:
                 if field not in update:
