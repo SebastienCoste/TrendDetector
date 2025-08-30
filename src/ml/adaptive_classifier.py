@@ -282,40 +282,49 @@ class AdaptiveTrendClassifier:
             return False
 
         # Prepare features
+        logger.info(f"received valid update request. Preparing features...")
         features = self._prepare_features(content_vector, velocity_features, contextual_features)
 
         # Update classifier
         if self.is_fitted:
+            logger.info(f"Model is fitted. Updating classifier with new sample...")
             self.classifier.learn_one(features, actual_trend)
+            logger.info(f"New sample learned by classifier.")
 
         drift_detected = False
         # Update accuracy metric
         if predicted_trend:
+            logger.info(f"{predicted_trend} predicted, actual: {actual_trend}")
             self.accuracy_metric.update(actual_trend, predicted_trend)
             # Simple drift detection based on prediction errors
             error = 1.0 if predicted_trend != actual_trend else 0.0
-            # Simple drift detection: if error rate is high
-            if error > 0 and self.prediction_count % 100 == 0:
+            if error > 0 and self.prediction_count > 4:
                 recent_accuracy = float(self.accuracy_metric.get())
-                if recent_accuracy < 0.7:  # If accuracy drops below 70%
+                if recent_accuracy < 0.7:
                     drift_detected = True
                     self.drift_count += 1
-                    logger.warning(f"Concept drift detected at sample {self.prediction_count}")
+                    logger.warning(f"Concept drift dropped to {recent_accuracy:.3f} at sample {self.prediction_count}")
                     self.last_drift_detection = self.prediction_count
                     # Update trend boundaries when drift is detected
                     self.trend_memory.update_trend_boundaries()
+                    self.prediction_count = 0 #Reset count after drift
+                else:
+                    logger.info(f"Concept drift acceptable: {recent_accuracy:.3f} at sample {self.prediction_count}")
+            else:
+                logger.info(f"Only {self.prediction_count} new samples, not recomputing drift")
 
         # Add to memory
         ts = timestamp if timestamp else time.time()
         self.trend_memory.add_trend_sample(content_vector, actual_trend, ts)
 
         # Periodically update trend boundaries
-        if self.prediction_count % self.update_frequency == 0:
+        if self.prediction_count > 0 and self.prediction_count % self.update_frequency == 0:
             logger.info("Updating trend boundaries (periodic)")
             self.trend_memory.update_trend_boundaries()
 
         self.prediction_count += 1
         self.last_update = datetime.now()
+        logger.info(f"Done updating with feedback. Total predictions: {self.prediction_count}")
 
         return drift_detected
 
@@ -351,7 +360,6 @@ class AdaptiveTrendClassifier:
             'accuracy_metric': self.accuracy_metric,
             'scaler': self.scaler,
             'trend_memory': {
-                'history': list(self.trend_memory.trend_history),
                 'centroids': self.trend_memory.trend_centroids,
                 'max_clusters': self.trend_memory.max_clusters,
                 'memory_size': self.trend_memory.memory_size,
@@ -374,6 +382,21 @@ class AdaptiveTrendClassifier:
         joblib.dump(model_state, filepath)
         logger.info(f"Model saved to {filepath}")
 
+        #TODO delete this one
+        history_state = {
+            'history': list(self.trend_memory.trend_history),
+        }
+        joblib.dump(history_state, f"history_{filepath}")
+        logger.info(f"Whole history saved to {filepath}")
+
+        recent_history_state = {
+            'history': list(self.trend_memory.recent_trend_history),
+        }
+        joblib.dump(recent_history_state, f"history_{datetime.now().strftime("%Y%m%d_%H%M%S")}_{filepath}")
+        logger.info(f"Recent history saved to {filepath}")
+
+        self.trend_memory.reset_recent_history()
+
     def load_model(self, filepath: str) -> None:
         """Load model state with full restoration"""
         model_state = joblib.load(filepath)
@@ -391,8 +414,7 @@ class AdaptiveTrendClassifier:
             time_decay_hours=trend_memory_data['time_decay_hours']
         )
 
-        # Restore history
-        for item in trend_memory_data['history']:
+        for item in model_state['history']:
             self.trend_memory.trend_history.append(item)
 
         self.trend_memory.trend_centroids = trend_memory_data['centroids']
@@ -412,3 +434,14 @@ class AdaptiveTrendClassifier:
         self.last_update = datetime.fromisoformat(state['last_update'])
 
         logger.info(f"Model loaded from {filepath}, version {self.model_version}")
+
+        pattern = f"history_*{filepath}"
+        history_files = glob.glob(pattern)
+        for file in history_files:
+            history_file = joblib.load(file)
+            # Restore history
+            for item in history_file['history']:
+                self.trend_memory.trend_history.append(item)
+            logger.info(f"History loaded from {file}")
+
+        logger.info(f"Model fully loaded from {filepath}, version {self.model_version}")

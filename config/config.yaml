@@ -6,6 +6,7 @@ server_config:
   workers: 1
   log_level: "INFO"
   preload_model: trend_classifier_poc
+  get_to_root: "../"
 
 model_settings:
   n_trees: 10

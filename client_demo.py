@@ -8,6 +8,7 @@ import requests
 import json
 import numpy as np
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from scripts.generate_synthetic_data import SyntheticDataGenerator
 
@@ -104,7 +105,9 @@ def demo(model_name, predictions):
     # Generate some sample data
     np.random.seed(42)
     rng = np.random.default_rng(42)
-    
+
+    confidences = []
+    accuracies = []
     for i in range(predictions):
         # Random embedding vector
         # embedding = np.random.randn(512)
@@ -147,15 +150,19 @@ def demo(model_name, predictions):
             else:
                 print(f"   Error: {result}")
                 continue
-            
-            print(f"#{i+1} {'YES' if predicted_trend == trend_from_data_generator else 'NOP'}: {predicted_trend} (conf: {confidence:.3f})."
-                  f" Truth: {trend_from_data_generator} (mean: {generated_mean:.3f}). E: sum: {e_sum:.3f}, mean: {e_mean:.3f}, var: {e_var:.3f}")
-            if trend_from_data_generator == predicted_trend:
-                correct_predictions += 1
 
+            confidences.append(confidence)
+            is_correct = 1 if trend_from_data_generator == predicted_trend else 0
+            accuracies.append(is_correct)
+            print(f"#{i+1} {'YES' if is_correct else 'NOP'}: {predicted_trend} (conf: {confidence:.3f})."
+                  f" Truth: {trend_from_data_generator} (mean: {generated_mean:.3f}). E: sum: {e_sum:.3f}, mean: {e_mean:.3f}, var: {e_var:.3f}")
+
+            if is_correct:
+                correct_predictions += 1
             # Send feedback from time to time, to inform the model how it performs
             # In reality, it would send feedback everytime a trend is acknowledged
-            if i%10 == 0:
+            # here we're evaluating how the model will adapt to evolving trends
+            if i%10 == 0 or confidence < 0.5:
                 client.update_model(
                     updates=[{
                         'embedding_vector': embedding.tolist(),
@@ -170,6 +177,20 @@ def demo(model_name, predictions):
             print(f"Prediction {i+1} failed: {e}")
 
     print(f"Predictions done. {correct_predictions}/{predictions} were corrects")
+
+    if confidences and accuracies:
+        fig, ax1 = plt.subplots(figsize=(10, 4))
+        ax1.plot(confidences, label="Confidence", color="tab:blue")
+        ax1.set_ylabel("Confidence", color="tab:blue")
+        ax1.set_xlabel("Prediction #")
+        ax1.tick_params(axis="y", labelcolor="tab:blue")
+        ax2 = ax1.twinx()
+        ax2.plot(accuracies, label="Correct (1) / Incorrect (0)", color="tab:orange", alpha=0.5, linestyle="steps-mid")
+        ax2.set_ylabel("Accuracy", color="tab:orange")
+        ax2.tick_params(axis="y", labelcolor="tab:orange")
+        plt.title("Prediction Confidence and Accuracy Timeline")
+        plt.show()
+
     # Get stats
     print("\n4. Getting model statistics...")
     try:

@@ -18,7 +18,7 @@ class ModelManager:
         self.model_versions: Dict[str, List[str]] = {}
         
         # Create model storage directory
-        self.model_path = Path(config.storage_config.model_path)
+        self.model_path = Path(f"{config.server_config.get_to_root}{config.storage_config.model_path}")
         self.model_path.mkdir(parents=True, exist_ok=True)
         
         logger.info(f"ModelManager initialized with storage path: {self.model_path}")
@@ -56,7 +56,7 @@ class ModelManager:
         """Load a model from file"""
         if filepath is None:
             filepath = self.model_path / f"{model_name}_latest.pkl"
-        
+        os.path.abspath(".")
         try:
             if not os.path.exists(filepath):
                 logger.warning(f"Model file not found: {filepath}")
@@ -77,6 +77,7 @@ class ModelManager:
 
     def save_model(self, model_name: str, filepath: Optional[str] = None) -> bool:
         """Save a model to file"""
+        logger.info(f"Saving model {model_name} to {filepath}")
         if model_name not in self.models:
             logger.error(f"Model {model_name} not found")
             return False
@@ -89,11 +90,12 @@ class ModelManager:
             model.save_model(str(filepath))
             
             # Also save with timestamp for versioning
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            versioned_filepath = self.model_path / f"{model_name}_{timestamp}.pkl"
-            model.save_model(str(versioned_filepath))
+            # LOL NOPE! not for a PoC at least
+            # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # versioned_filepath = self.model_path / f"{model_name}_{timestamp}.pkl"
+            # model.save_model(str(versioned_filepath))
             
-            logger.info(f"Saved model {model_name} to {filepath}")
+            logger.info(f"Done saving model {model_name} to {filepath}")
             return True
             
         except Exception as e:

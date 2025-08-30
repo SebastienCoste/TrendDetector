@@ -13,12 +13,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from .core.config import AppConfig
-from .core.logging import setup_logging
-from .core.model_manager import ModelManager, initialize_model_manager
-from .core.gpu_utils import initialize_gpu
-from .api.v2 import inference, update, stats
-from .api.middleware import LoggingMiddleware
+from src.core.config import AppConfig
+from src.core.logging import setup_logging
+from src.core.model_manager import ModelManager, initialize_model_manager
+from src.core.gpu_utils import initialize_gpu
+from src.api.v2 import inference, update, stats
+from src.api.middleware import LoggingMiddleware
 
 # Global configuration
 config: AppConfig = None
@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 
     try:
         # Load configuration
-        config_path = Path("config/config.yaml")
+        config_path = Path(f"{get_to_root}config/config.yaml")
         if config_path.exists():
             config = AppConfig.from_yaml(str(config_path))
         else:
@@ -141,8 +141,11 @@ async def health_check():
         logging.error(f"Health check failed: {e}")
         raise HTTPException(status_code=503, detail="Service unhealthy")
 
+get_to_root = "../"
+
 if __name__ == "__main__":
     # Run with uvicorn
+
     uvicorn.run(
         "src.main:app",
         host="0.0.0.0",

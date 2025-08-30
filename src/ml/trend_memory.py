@@ -18,7 +18,8 @@ class DynamicTrendMemory:
         
         # Store trend history
         self.trend_history = deque(maxlen=memory_size)
-        
+        self.recent_trend_history = deque(maxlen=memory_size)
+
         # Centroids for each trend type
         self.trend_centroids = {
             'upward': [],
@@ -28,6 +29,9 @@ class DynamicTrendMemory:
         
         logger.info(f"TrendMemory initialized: max_clusters={max_clusters}, memory_size={memory_size}")
 
+    def reset_recent_history(self) -> None:
+        self.recent_trend_history = deque(maxlen=self.memory_size)
+
     def add_trend_sample(self, embedding: np.ndarray, trend: str, timestamp: float) -> None:
         """Add a new trend sample to memory"""
         sample = {
@@ -36,9 +40,8 @@ class DynamicTrendMemory:
             'timestamp': timestamp
         }
         self.trend_history.append(sample)
-        
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f"Added sample: trend={trend}, timestamp={timestamp}")
+        self.recent_trend_history.append(sample)
+        logger.info(f"Added sample: trend={trend}, timestamp={timestamp}")
 
     def get_similar_trends(self, query_embedding: np.ndarray, top_k: int = 5) -> List[Dict[str, Any]]:
         """Find similar trends using cosine similarity"""

@@ -17,6 +17,7 @@ async def update_model(
     model_manager: ModelManager = Depends(get_model_manager)
 ) -> UpdateResponse:
     """Update model with feedback data"""
+    logger.info(f"Received update request for model {model_name}")
     try:
         # Ensure model exists
         if not model_manager.is_model_loaded(model_name):
@@ -26,6 +27,7 @@ async def update_model(
         classifier = model_manager.get_classifier(model_name)
         processed_updates = 0
         drift_detected_any = False
+        logger.info(f"Model {model_name} locked and loaded")
 
         for update in request.updates:
             try:
@@ -54,15 +56,16 @@ async def update_model(
                     drift_detected_any = True
 
                 processed_updates += 1
+                logger.info(f"Processed update #{processed_updates}")
 
             except Exception as e:
                 logger.warning(f"Failed to process update: {e}")
                 continue
 
-        # Save model if auto_save is enabled
-        if model_manager.config.storage_config.auto_save:
+        # Save model if auto_save is enabled and there's been a drift
+        if drift_detected_any and model_manager.config.storage_config.auto_save:
             model_manager.save_model(model_name)
-
+        logger.info(f"Successfully processed {processed_updates} updates")
         return UpdateResponse(
             processed_updates=processed_updates,
             drift_detected=drift_detected_any,

@@ -19,6 +19,7 @@ class ServerConfig(BaseModel):
     workers: int = Field(default=1, description="Number of workers")
     log_level: str = Field(default="INFO", description="Logging level")
     preload_model: str = Field(default="trend_classifier_poc", description="default model")
+    get_to_root: str = Field(default="./", description="get to root if needed")
 
 class StorageConfig(BaseModel):
     model_path: str = Field(default="./models", description="Model storage path")
