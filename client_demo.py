@@ -103,12 +103,18 @@ def demo(model_name, predictions):
     
     # Generate some sample data
     np.random.seed(42)
+    rng = np.random.default_rng(42)
     
     for i in range(predictions):
         # Random embedding vector
-        embedding = np.random.randn(512)
+        # embedding = np.random.randn(512)
+        embedding = rng.standard_normal(512)
+        e_sum = np.sum(embedding)
+        e_mean = np.mean(embedding)
+        e_var = np.var(embedding)
         data_generator = SyntheticDataGenerator()
-        inference_time = datetime.now().timestamp()
+        inference_time = (datetime.now() - timedelta(days=np.random.uniform(0, 30))).timestamp()
+        generated_mean = data_generator.generate_mean(inference_time, embedding)
         trend_from_data_generator = data_generator.calculate_trend_from_vector_and_time(
             embedding,
             inference_time,
@@ -142,8 +148,8 @@ def demo(model_name, predictions):
                 print(f"   Error: {result}")
                 continue
             
-            print(f"Prediction {i+1}: {predicted_trend} (confidence: {confidence:.3f})."
-                  f" Truth (if using the generator script): {trend_from_data_generator}")
+            print(f"#{i+1}: {predicted_trend} (conf: {confidence:.3f})."
+                  f" Truth: {trend_from_data_generator} (mean: {generated_mean:.3f}). E: sum: {e_sum:.3f}, mean: {e_mean:.3f}, var: {e_var:.3f}")
             if trend_from_data_generator == predicted_trend:
                 correct_predictions += 1
         except Exception as e:

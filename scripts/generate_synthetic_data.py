@@ -47,16 +47,7 @@ class SyntheticDataGenerator:
                                              threshold: float) -> str:
         """Alternative trend calculation based on 10 hour/day-dependent vector values"""
 
-        # Time-based features
-        hour_of_day = int((timestamp % (24 * 3600)) / 3600)  # 0-23
-        day_of_week = int(timestamp // (24 * 3600)) % 7      # 0-6
-
-        # Deterministically select 10 indices based on hour and day
-        dim = vector.shape[0]
-        indices = [((hour_of_day * 31 + day_of_week * 17 + i * 13) % dim) for i in range(10)]
-
-        selected_values = vector[indices]
-        mean_value = np.mean(selected_values)
+        mean_value = self.generate_mean(timestamp, vector)
 
         if mean_value > threshold:
             return "upward"
@@ -65,6 +56,18 @@ class SyntheticDataGenerator:
         else:
             return "neutral"
 
+    def generate_mean(self, timestamp: float, vector: np.ndarray) -> np.float64:
+        # Time-based features
+        hour_of_day = int((timestamp % (24 * 3600)) / 3600)  # 0-23
+        day_of_week = int(timestamp // (24 * 3600)) % 7  # 0-6
+
+        # Deterministically select 10 indices based on hour and day
+        dim = vector.shape[0]
+        indices = [((hour_of_day * 31 + day_of_week * 17 + i * 13) % dim) for i in range(10)]
+
+        selected_values = vector[indices]
+        mean_value = np.mean(selected_values)
+        return mean_value
 
     def calculate_trend_from_vector_and_time_complicated(self,
                                            vector: np.ndarray,
