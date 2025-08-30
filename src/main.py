@@ -54,8 +54,8 @@ async def lifespan(app: FastAPI):
 
         # Try to load existing model
         try:
-            model_manager.load_latest_model("trend_classifier")
-            logging.info("Loaded existing model")
+            model_manager.load_latest_model(config.server_config.preload_model)
+            logging.info(f"Loaded existing model {config.server_config.preload_model}")
         except Exception as e:
             logging.warning(f"No existing model found: {e}")
             logging.info("Starting with fresh model")
@@ -73,9 +73,9 @@ async def lifespan(app: FastAPI):
 
     try:
         # Save current model state
-        if model_manager and model_manager.is_model_loaded("trend_classifier"):
-            model_manager.save_model("trend_classifier")
-            logging.info("Model state saved")
+        if model_manager and model_manager.is_model_loaded(config.server_config.preload_model):
+            model_manager.save_model(config.server_config.preload_model)
+            logging.info(f"Model {config.server_config.preload_model} state saved")
     except Exception as e:
         logging.error(f"Error during shutdown: {e}")
 
@@ -133,7 +133,7 @@ async def health_check():
 
         return {
             "status": "healthy",
-            "model_loaded": model_manager.is_model_loaded("trend_classifier") if model_manager else False,
+            "model_loaded": model_manager.is_model_loaded(config.server_config.preload_model) if model_manager else False,
             "gpu_enabled": gpu_info is not None,
             "version": "1.0.0"
         }

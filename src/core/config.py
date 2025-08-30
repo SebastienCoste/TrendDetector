@@ -18,6 +18,7 @@ class ServerConfig(BaseModel):
     port: int = Field(default=8080, description="Server port")
     workers: int = Field(default=1, description="Number of workers")
     log_level: str = Field(default="INFO", description="Logging level")
+    preload_model: str = Field(default="trend_classifier_poc", description="default model")
 
 class StorageConfig(BaseModel):
     model_path: str = Field(default="./models", description="Model storage path")

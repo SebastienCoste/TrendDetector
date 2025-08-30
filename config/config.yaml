@@ -5,6 +5,7 @@ server_config:
   port: 8080
   workers: 1
   log_level: "INFO"
+  preload_model: trend_classifier_poc
 
 model_settings:
   n_trees: 10

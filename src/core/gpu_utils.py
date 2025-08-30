@@ -26,8 +26,8 @@ class GPUManager:
 
         if self.gpu_enabled:
             try:
-                torch.cuda.Device(device_id).use()
-                self.device = torch.cuda.Device(device_id)
+                torch.cuda.set_device(device_id)
+                self.device = torch.device(f"cuda:{device_id}")
                 logger.info(f"GPU initialized: Device {device_id}")
             except Exception as e:
                 logger.error(f"GPU initialization failed: {e}")
