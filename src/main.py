@@ -53,6 +53,10 @@ async def lifespan(app: FastAPI):
         # Initialize model manager
         model_manager = initialize_model_manager(config)
 
+        # Initialize UI services
+        from .api.ui.router import initialize_ui_services
+        initialize_ui_services(model_manager)
+
         # Try to load existing model
         try:
             model_manager.load_latest_model("trend_classifier")
