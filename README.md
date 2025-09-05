@@ -289,11 +289,30 @@ black src/
 flake8 src/
 ```
 
-### Performance Testing
+### Training Models
 
 ```bash
-python scripts/generate_synthetic_data.py --samples 10000
-python -m pytest tests/test_performance.py
+# Generate training data for classification
+python scripts/generate_synthetic_data.py --samples 1000 --model-type classification --output ./class_data
+
+# Generate training data for regression  
+python scripts/generate_synthetic_data.py --samples 1000 --model-type regression --output ./reg_data
+
+# Train classification model
+python train_model.py --model-type classification --model-name trend_classifier --data-path class_data
+
+# Train regression model
+python train_model.py --model-type regression --model-name trend_regressor --data-path reg_data
+```
+
+### Testing
+
+```bash
+# Run comprehensive tests
+python -m pytest tests/ -v
+
+# Test dual-model system
+python test_dual_model_client.py
 ```
 
 ## Monitoring
