@@ -38,3 +38,9 @@ logging_config:
   log_drift_events: true
   max_file_size: "100MB"
   backup_count: 5
+
+evaluation_config:
+  regression_metrics: ["mae", "rmse", "r2"]
+  primary_regression_metric: "mae"
+  classification_metrics: ["accuracy", "precision", "recall", "f1"]
+  primary_classification_metric: "accuracy"
