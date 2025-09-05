@@ -241,8 +241,6 @@ class AdaptiveTrendClassifier:
                            content_vector: np.ndarray,
                            actual_trend: str,
                            predicted_trend: Optional[str] = None,
-                           velocity_features: Optional[Dict[str, float]] = None,
-                           contextual_features: Optional[Dict[str, float]] = None,
                            timestamp: Optional[float] = None) -> bool:
         """Update model with actual trend outcome"""
 
