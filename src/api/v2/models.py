@@ -36,6 +36,12 @@ class InferenceRequest(BaseModel):
     inputs: List[InferTensor] = Field(..., description="Input tensors")
     outputs: Optional[List[Dict[str, Any]]] = Field(None, description="Output specifications")
     parameters: Optional[Dict[str, Any]] = Field(None, description="Request parameters")
+    
+    def get_model_type(self) -> Optional[str]:
+        """Extract model type from parameters if provided"""
+        if self.parameters and 'model_type' in self.parameters:
+            return self.parameters['model_type']
+        return None
 
     @validator('inputs')
     def validate_inputs(cls, v):
