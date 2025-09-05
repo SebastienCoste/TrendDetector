@@ -273,16 +273,20 @@ def main():
     parser.add_argument("--days", type=int, default=30, help="Time span in days")
     parser.add_argument("--output", type=str, default="./test_data", help="Output directory")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--model-type", type=str, default="classification", 
+                        choices=["classification", "regression"],
+                        help="Model type: classification or regression")
 
     args = parser.parse_args()
 
     generator = SyntheticDataGenerator(seed=args.seed)
-    vectors, trends, timestamps, velocity_features_list = generator.generate_dataset(
+    vectors, targets, timestamps, velocity_features_list = generator.generate_dataset(
         n_samples=args.samples,
-        time_span_days=args.days
+        time_span_days=args.days,
+        model_type=args.model_type
     )
 
-    generator.save_dataset(vectors, trends, timestamps, velocity_features_list, args.output)
+    generator.save_dataset(vectors, targets, timestamps, velocity_features_list, args.output, args.model_type)
 
 if __name__ == "__main__":
     main()
