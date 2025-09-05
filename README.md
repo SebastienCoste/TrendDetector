@@ -113,10 +113,18 @@ server_config:
   host: "0.0.0.0"
   port: 8080
 
-model_config:
+model_settings:
+  type: "classification"  # or "regression"
   n_trees: 10
   drift_threshold: 0.01
   embedding_dim: 512
+  output_range: [-1, 1]  # for regression models
+
+evaluation_config:
+  regression_metrics: ["mae", "rmse", "r2"]
+  primary_regression_metric: "mae"
+  classification_metrics: ["accuracy", "precision", "recall", "f1"]
+  primary_classification_metric: "accuracy"
 
 gpu_config:
   enabled: true
