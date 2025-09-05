@@ -233,15 +233,10 @@ class TrendDetectorAPITester:
             # Generate a test vector
             test_vector = [0.1 * i for i in range(512)]  # Simple test vector
             
-            # Test classification prediction
-            class_payload = {
-                "vector": test_vector,
-                "model_type": "classification"
-            }
-            
+            # Test classification prediction - send vector directly as JSON array
             response = self.session.post(
-                f"{self.base_url}/api/ui/predict",
-                json=class_payload,
+                f"{self.base_url}/api/ui/predict?model_type=classification",
+                json=test_vector,
                 headers={"Content-Type": "application/json"}
             )
             
