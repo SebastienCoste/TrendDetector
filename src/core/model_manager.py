@@ -66,10 +66,15 @@ class ModelManager:
         logger.info(f"Created {model_type} model {model_name} version {version}")
         return model
 
-    def load_model(self, model_name: str, filepath: Optional[str] = None) -> bool:
+    def load_model(self, model_name: str, model_type: Optional[str] = None, filepath: Optional[str] = None) -> bool:
         """Load a model from file"""
+        if model_type is None:
+            model_type = self.config.model_settings.type
+            
         if filepath is None:
-            filepath = self.model_path / f"{model_name}_latest.pkl"
+            # Use type-specific directory
+            type_dir = "classifier" if model_type == "classification" else "regressor"
+            filepath = self.model_path / type_dir / f"{model_name}_latest.pkl"
         
         try:
             if not os.path.exists(filepath):
@@ -77,12 +82,12 @@ class ModelManager:
                 return False
             
             # Create a new model instance
-            model = self.create_model(model_name)
+            model = self.create_model(model_name, model_type)
             
             # Load the saved state
-            model.load_model(str(filepath))
+            model.load(str(filepath))
             
-            logger.info(f"Loaded model {model_name} from {filepath}")
+            logger.info(f"Loaded {model_type} model {model_name} from {filepath}")
             return True
             
         except Exception as e:
