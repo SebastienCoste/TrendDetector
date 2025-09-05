@@ -54,6 +54,7 @@ class AppConfig(BaseModel):
     storage_config: StorageConfig = Field(default_factory=StorageConfig)
     gpu_config: GPUConfig = Field(default_factory=GPUConfig)
     logging_config: LoggingConfig = Field(default_factory=LoggingConfig)
+    evaluation_config: EvaluationConfig = Field(default_factory=EvaluationConfig)
 
     @classmethod
     def from_yaml(cls, config_path: str) -> "AppConfig":
