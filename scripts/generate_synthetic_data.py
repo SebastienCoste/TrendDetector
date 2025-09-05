@@ -43,7 +43,7 @@ class SyntheticDataGenerator:
                                                  vector: np.ndarray,
                                                  timestamp: float,
                                                  base_time: float) -> float:
-        """Calculate trend based on vector characteristics and time"""
+        """Calculate trend score based on vector characteristics and time"""
 
         # Vector-based features
         vector_sum = np.sum(vector)
@@ -94,10 +94,14 @@ class SyntheticDataGenerator:
         # Add some randomness for realism
         trend_score += np.random.normal(0, 0.1)
 
-        # Convert to categorical trend
-        if trend_score > 0.15:
+        # Normalize to [-1, 1] range using tanh
+        return float(np.tanh(trend_score))
+
+    def score_to_category(self, score: float) -> str:
+        """Convert continuous score to categorical trend"""
+        if score > 0.3:
             return "upward"
-        elif trend_score < -0.15:
+        elif score < -0.3:
             return "downward"
         else:
             return "neutral"
