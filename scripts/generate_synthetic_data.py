@@ -170,7 +170,7 @@ class SyntheticDataGenerator:
                         embedding_dim: int = 512,
                         model_type: str = "classification",
                         start_date: datetime = None) -> Tuple[List[np.ndarray], List[Any], List[float], List[Dict[str, float]]]:
-        """Generate complete synthetic dataset"""
+        """Generate complete synthetic dataset for both model types"""
 
         if start_date is None:
             start_date = datetime.now() - timedelta(days=time_span_days)
@@ -179,11 +179,11 @@ class SyntheticDataGenerator:
         end_timestamp = (start_date + timedelta(days=time_span_days)).timestamp()
 
         vectors = []
-        trends = []
+        targets = []  # Either trends (str) or scores (float)
         timestamps = []
         velocity_features_list = []
 
-        print(f"Generating {n_samples} samples over {time_span_days} days...")
+        print(f"Generating {n_samples} {model_type} samples over {time_span_days} days...")
 
         for i in range(n_samples):
             # Generate timestamp (uniformly distributed over time span)
@@ -196,14 +196,21 @@ class SyntheticDataGenerator:
             content_type = np.random.choice(["random", "viral", "trending"], p=[0.7, 0.15, 0.15])
             vector = self.generate_embedding_vector(content_type, embedding_dim)
 
-            # Calculate trend based on vector and time
-            trend = self.calculate_trend_from_vector_and_time(vector, timestamp, base_timestamp)
+            # Calculate trend score based on vector and time
+            trend_score = self.calculate_trend_score_from_vector_and_time(vector, timestamp, base_timestamp)
+            
+            # Set target based on model type
+            if model_type == "classification":
+                target = self.score_to_category(trend_score)
+            else:  # regression
+                target = trend_score
 
-            # Generate consistent velocity features
-            velocity_features = self.generate_velocity_features(trend, timestamp)
+            # Generate consistent velocity features (for internal use only)
+            category = self.score_to_category(trend_score)
+            velocity_features = self.generate_velocity_features(category, timestamp)
 
             vectors.append(vector)
-            trends.append(trend)
+            targets.append(target)
             timestamps.append(timestamp)
             velocity_features_list.append(velocity_features)
 
@@ -211,10 +218,15 @@ class SyntheticDataGenerator:
                 print(f"Generated {i + 1}/{n_samples} samples")
 
         # Print distribution
-        trend_counts = {trend: trends.count(trend) for trend in ["upward", "downward", "neutral"]}
-        print(f"Trend distribution: {trend_counts}")
+        if model_type == "classification":
+            target_counts = {target: targets.count(target) for target in ["upward", "downward", "neutral"]}
+            print(f"Trend distribution: {target_counts}")
+        else:
+            target_array = np.array(targets)
+            print(f"Score statistics - Mean: {np.mean(target_array):.3f}, Std: {np.std(target_array):.3f}")
+            print(f"Score range: [{np.min(target_array):.3f}, {np.max(target_array):.3f}]")
 
-        return vectors, trends, timestamps, velocity_features_list
+        return vectors, targets, timestamps, velocity_features_list
 
     def save_dataset(self,
                     vectors: List[np.ndarray],
