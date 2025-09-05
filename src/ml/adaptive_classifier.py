@@ -100,10 +100,7 @@ class AdaptiveTrendClassifier:
                 f"got {content_vector.shape[0]}"
             )
 
-    def _prepare_features(self,
-                         content_vector: np.ndarray,
-                         velocity_features: Optional[Dict[str, float]] = None,
-                         contextual_features: Optional[Dict[str, float]] = None) -> Dict[str, float]:
+    def _prepare_features(self, content_vector: np.ndarray) -> Dict[str, float]:
         """Prepare feature vector for prediction with GPU acceleration"""
 
         self._validate_input(content_vector)
