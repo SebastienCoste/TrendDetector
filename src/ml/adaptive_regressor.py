@@ -137,7 +137,9 @@ class AdaptiveTrendRegressor:
 
     def _normalize_score(self, score: float) -> float:
         """Normalize score to output range using tanh"""
-        return np.tanh(score)
+        if not np.isfinite(score):
+            return 0.0
+        return float(np.tanh(np.clip(score, -10.0, 10.0)))
 
     def fit_initial(self,
                    vectors: List[np.ndarray],
