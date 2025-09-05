@@ -113,6 +113,7 @@ async def get_model_version_metadata(model_name: str, version: str) -> ModelMeta
 async def infer(
     model_name: str,
     request: InferenceRequest,
+    model_type: Optional[str] = Query(None, description="Model type override"),
     model_manager: ModelManager = Depends(get_model_manager)
 ) -> InferenceResponse:
     """Perform inference (KServe V2 compliant)"""
