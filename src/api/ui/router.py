@@ -221,7 +221,12 @@ async def make_prediction(
             result = PredictionResult(
                 predicted_value=prediction_result.predicted_trend,
                 confidence=prediction_result.confidence,
-                probabilities=prediction_result.probabilities if hasattr(prediction_result, 'probabilities') else None,
+                probabilities={
+                    trend: float(prob) for trend, prob in zip(
+                        ["upward", "downward", "neutral"],
+                        prediction_result.probabilities if hasattr(prediction_result, 'probabilities') else [0.33, 0.33, 0.34]
+                    )
+                },
                 model_type=model_type.value,
                 timestamp=datetime.now()
             )
