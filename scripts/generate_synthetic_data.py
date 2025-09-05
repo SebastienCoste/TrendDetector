@@ -245,16 +245,22 @@ class SyntheticDataGenerator:
 
         # Save other data as JSON
         data = {
-            "trends": trends,
+            "model_type": model_type,
+            "targets": targets,  # Either trends or scores
             "timestamps": timestamps,
-            "velocity_features": velocity_features_list,
+            "velocity_features": velocity_features_list,  # For internal use only
             "metadata": {
                 "n_samples": len(vectors),
                 "embedding_dim": vectors[0].shape[0],
                 "generation_time": datetime.now().isoformat(),
-                "seed": self.seed
+                "seed": self.seed,
+                "model_type": model_type
             }
         }
+        
+        # Backwards compatibility
+        if model_type == "classification":
+            data["trends"] = targets
 
         with open(output_dir / "data.json", "w") as f:
             json.dump(data, f, indent=2)
