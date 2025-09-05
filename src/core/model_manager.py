@@ -124,15 +124,22 @@ class ModelManager:
             logger.error(f"Failed to save model {model_name}: {e}")
             return False
 
-    def get_classifier(self, model_name: str) -> AdaptiveTrendClassifier:
-        """Get classifier instance"""
+    def get_model(self, model_name: str, model_type: Optional[str] = None) -> TrendModelInterface:
+        """Get model instance"""
+        if model_type is None:
+            model_type = self.config.model_settings.type
+            
         if model_name not in self.models:
             # Try to load existing model or create new one
-            if not self.load_model(model_name):
-                logger.info(f"Creating new model {model_name}")
-                self.create_model(model_name)
+            if not self.load_model(model_name, model_type):
+                logger.info(f"Creating new {model_type} model {model_name}")
+                self.create_model(model_name, model_type)
         
         return self.models[model_name]
+
+    def get_classifier(self, model_name: str) -> TrendModelInterface:
+        """Get classifier instance (backwards compatibility)"""
+        return self.get_model(model_name, "classification")
 
     def is_model_loaded(self, model_name: str) -> bool:
         """Check if model is loaded"""
