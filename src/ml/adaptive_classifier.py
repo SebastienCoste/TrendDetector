@@ -101,22 +101,14 @@ class AdaptiveTrendClassifier:
             )
 
     def _prepare_features(self, content_vector: np.ndarray) -> Dict[str, float]:
-        """Prepare feature vector for prediction with GPU acceleration"""
+        """Prepare feature vector for prediction using only embeddings"""
 
         self._validate_input(content_vector)
         features = {}
 
-        # Add embedding features
+        # Add embedding features only (as per dual-model spec)
         for i, val in enumerate(content_vector):
             features[f'embedding_{i}'] = float(val)
-
-        # Add velocity features
-        if velocity_features:
-            features.update(velocity_features)
-
-        # Add contextual features
-        if contextual_features:
-            features.update(contextual_features)
 
         # Add similarity features from memory (GPU accelerated)
         similar_trends = self.trend_memory.get_similar_trends(content_vector)
