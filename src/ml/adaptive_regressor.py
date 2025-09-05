@@ -219,7 +219,7 @@ class AdaptiveTrendRegressor:
             normalized_score = self._normalize_score(raw_score)
             
             # Calculate confidence based on score magnitude
-            confidence = min(abs(normalized_score), 1.0)
+            confidence = float(min(abs(normalized_score), 1.0))
 
             result = RegressionResult(
                 predicted_score=normalized_score,
