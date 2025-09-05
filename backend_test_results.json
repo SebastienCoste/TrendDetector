@@ -8,73 +8,73 @@
       "test": "Health Check",
       "success": true,
       "details": "Service healthy, model_loaded: True",
-      "timestamp": "2025-09-05T03:56:41.184580"
+      "timestamp": "2025-09-05T03:57:12.556213"
     },
     {
       "test": "Models Info",
       "success": true,
       "details": "Found 1 models: ['classification']",
-      "timestamp": "2025-09-05T03:56:41.186974"
+      "timestamp": "2025-09-05T03:57:12.558543"
     },
     {
       "test": "Vector Algorithms",
       "success": true,
       "details": "Available patterns: ['linear', 'sinusoidal', 'exponential', 'random_walk']",
-      "timestamp": "2025-09-05T03:56:41.189664"
+      "timestamp": "2025-09-05T03:57:12.561136"
     },
     {
       "test": "Vector Generation",
       "success": true,
-      "details": "Generated vector length: 512, expected_trend: 0.35252351629082124, algorithm: sinusoidal",
-      "timestamp": "2025-09-05T03:56:41.193607"
+      "details": "Generated vector length: 512, expected_trend: 0.4770522677363391, algorithm: sinusoidal",
+      "timestamp": "2025-09-05T03:57:12.564844"
     },
     {
       "test": "Classification Prediction",
       "success": false,
       "details": "HTTP 500: {\"detail\":\"3 validation errors for PredictionResult\\nprobabilities.upward\\n  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='downward', input_type=str]\\n    For further information visit https://errors.pydantic.dev/2.11/v/float_parsing\\nprobabilities.downward\\n  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='neutral', input_type=str]\\n    For further information visit https://errors.pydantic.dev/2.11/v/float_parsing\\nprobabilities.neutral\\n  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='upward', input_type=str]\\n    For further information visit https://errors.pydantic.dev/2.11/v/float_parsing\"}",
-      "timestamp": "2025-09-05T03:56:41.201167"
+      "timestamp": "2025-09-05T03:57:12.572083"
     },
     {
       "test": "Drift Test Start",
       "success": true,
-      "details": "Started test: 049368b2-591b-462b-b9fd-439c2b0eb499",
-      "timestamp": "2025-09-05T03:56:41.204910"
+      "details": "Started test: 89a7c1ec-d21e-4731-91d8-bddcdc0ad407",
+      "timestamp": "2025-09-05T03:57:12.576036"
     },
     {
       "test": "Drift Test Progress",
       "success": true,
       "details": "Test completed with progress: 100.0%",
-      "timestamp": "2025-09-05T03:56:45.214070"
+      "timestamp": "2025-09-05T03:57:16.585543"
     },
     {
       "test": "Drift Test Results",
       "success": true,
       "details": "Retrieved 20 results, 10 in drift period",
-      "timestamp": "2025-09-05T03:56:45.228649"
+      "timestamp": "2025-09-05T03:57:16.600727"
     },
     {
       "test": "Active Tests List",
       "success": true,
-      "details": "Found 3 active tests",
-      "timestamp": "2025-09-05T03:56:45.231134"
+      "details": "Found 4 active tests",
+      "timestamp": "2025-09-05T03:57:16.603374"
     },
     {
       "test": "Invalid Endpoint Error",
       "success": true,
       "details": "Correctly returned 404",
-      "timestamp": "2025-09-05T03:56:45.233341"
+      "timestamp": "2025-09-05T03:57:16.605754"
     },
     {
       "test": "Malformed Request Error",
       "success": true,
       "details": "Correctly returned 422",
-      "timestamp": "2025-09-05T03:56:45.235905"
+      "timestamp": "2025-09-05T03:57:16.608416"
     },
     {
       "test": "Non-existent Test Error",
       "success": true,
       "details": "Correctly returned 404",
-      "timestamp": "2025-09-05T03:56:45.238463"
+      "timestamp": "2025-09-05T03:57:16.610620"
     }
   ]
 }
