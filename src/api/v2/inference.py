@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get("/models/{model_name}")
-async def get_model_metadata(model_name: str) -> ModelMetadata:
+async def get_model_metadata(model_name: str, model_type: Optional[str] = None) -> ModelMetadata:
     """Get model metadata (KServe V2 compliant)"""
     try:
         model_manager = get_model_manager()
