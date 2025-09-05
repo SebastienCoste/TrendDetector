@@ -188,6 +188,7 @@ Both models use **embedding vectors only** as input features:
 
 ### Output Format
 
+#### Classification Response
 ```json
 {
   "model_name": "trend_classifier",
@@ -204,8 +205,42 @@ Both models use **embedding vectors only** as input features:
       "shape": [1],
       "datatype": "FP32",
       "data": [0.85]
+    },
+    {
+      "name": "probabilities",
+      "shape": [1, 3], 
+      "datatype": "FP32",
+      "data": [0.85, 0.10, 0.05]
     }
-  ]
+  ],
+  "parameters": {
+    "model_type": "classification"
+  }
+}
+```
+
+#### Regression Response
+```json
+{
+  "model_name": "trend_regressor",
+  "model_version": "v1", 
+  "outputs": [
+    {
+      "name": "trend_score",
+      "shape": [1],
+      "datatype": "FP32",
+      "data": [0.73]
+    },
+    {
+      "name": "confidence",
+      "shape": [1], 
+      "datatype": "FP32",
+      "data": [0.73]
+    }
+  ],
+  "parameters": {
+    "model_type": "regression"
+  }
 }
 ```
 
