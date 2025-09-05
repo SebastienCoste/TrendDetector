@@ -16,13 +16,15 @@ A real-time machine learning service that predicts content trends using adaptive
 
 ## System Architecture
 
-The system implements a microservices architecture with the following components:
+The system implements a dual-model architecture with the following components:
 
-- **FastAPI Application**: KServe V2 compliant REST API
-- **Adaptive Random Forest Classifier**: Core ML algorithm using River
+- **FastAPI Application**: KServe V2 compliant REST API with dynamic model routing
+- **Model Interface Layer**: Unified interface for both classification and regression
+- **Adaptive Random Forest Models**: Separate classifiers and regressors using River
 - **Dynamic Trend Memory**: GPU-accelerated similarity matching
 - **Concept Drift Detection**: Automated model adaptation
-- **Model Manager**: Version control and persistence
+- **Model Manager**: Version control and persistence for both model types
+- **Evaluation System**: Configurable metrics for both model types
 
 ## Quick Start
 
