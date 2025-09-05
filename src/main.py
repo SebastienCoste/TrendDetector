@@ -109,6 +109,9 @@ app.include_router(inference.router, prefix="/v2", tags=["inference"])
 app.include_router(update.router, prefix="/v2", tags=["update"])
 app.include_router(stats.router, prefix="/v2", tags=["statistics"])
 
+# Include UI API routes  
+app.include_router(ui_router.router, prefix="/api", tags=["ui"])
+
 @app.get("/")
 async def root():
     """Root endpoint"""
