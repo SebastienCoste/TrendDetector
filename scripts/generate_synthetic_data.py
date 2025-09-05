@@ -168,7 +168,8 @@ class SyntheticDataGenerator:
                         n_samples: int = 1000,
                         time_span_days: int = 30,
                         embedding_dim: int = 512,
-                        start_date: datetime = None) -> Tuple[List[np.ndarray], List[str], List[float], List[Dict[str, float]]]:
+                        model_type: str = "classification",
+                        start_date: datetime = None) -> Tuple[List[np.ndarray], List[Any], List[float], List[Dict[str, float]]]:
         """Generate complete synthetic dataset"""
 
         if start_date is None:
