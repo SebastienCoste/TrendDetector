@@ -254,15 +254,10 @@ class TrendDetectorAPITester:
                 self.log_test("Classification Prediction", False, f"HTTP {response.status_code}: {response.text}")
                 return False
             
-            # Test regression prediction
-            reg_payload = {
-                "vector": test_vector,
-                "model_type": "regression"
-            }
-            
+            # Test regression prediction - send vector directly as JSON array
             response = self.session.post(
-                f"{self.base_url}/api/ui/predict",
-                json=reg_payload,
+                f"{self.base_url}/api/ui/predict?model_type=regression",
+                json=test_vector,
                 headers={"Content-Type": "application/json"}
             )
             
