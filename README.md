@@ -131,6 +131,38 @@ gpu_config:
   fallback_cpu: true
 ```
 
+## Dual-Model Architecture
+
+### Model Types
+
+The system supports two model types that can be selected via configuration or API parameters:
+
+#### Classification Model
+- **Output**: Categorical trends (`upward`, `downward`, `neutral`)
+- **Use Case**: Clear trend categorization for content filtering
+- **Metrics**: Accuracy, Precision, Recall, F1-score
+- **API Response**: Predicted class + confidence + class probabilities
+
+#### Regression Model  
+- **Output**: Continuous trend score in range [-1, 1]
+- **Use Case**: Fine-grained trend analysis and ranking
+- **Metrics**: MAE, RMSE, R²
+- **API Response**: Predicted score + confidence
+
+### Model Selection
+
+Models can be selected in three ways:
+1. **Configuration**: Set `model_settings.type` in `config.yaml`
+2. **Query Parameter**: Add `?model_type=classification` or `?model_type=regression`
+3. **Request Parameter**: Include `"model_type": "regression"` in request body
+
+### Feature Input
+
+Both models use **embedding vectors only** as input features:
+- No velocity features in model input (embeddings-only as per specification)
+- Velocity metrics used internally during synthetic data generation only
+- 512-dimensional embedding vectors expected by default
+
 ## Data Format
 
 ### Input Format (Inference)
