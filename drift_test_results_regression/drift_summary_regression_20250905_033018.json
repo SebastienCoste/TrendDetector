@@ -1,0 +1,18 @@
+{
+  "total_samples": 125,
+  "pre_drift_samples": 50,
+  "drift_samples": 75,
+  "pre_drift_error": {
+    "mean": 0.21086618725309914,
+    "std": 0.1413238923147141,
+    "max": 0.5458339754471103
+  },
+  "drift_error": {
+    "mean": 0.20342860113296024,
+    "std": 0.11852052719749102,
+    "max": 0.4973962326398985
+  },
+  "drift_detected_count": 0,
+  "feedback_provided_count": 120,
+  "error_increase_percent": -3.5271591984596777
+}
