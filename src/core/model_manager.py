@@ -100,19 +100,24 @@ class ModelManager:
             logger.error(f"Model {model_name} not found")
             return False
         
+        model = self.models[model_name]
+        model_type = model.get_model_type()
+        
         if filepath is None:
-            filepath = self.model_path / f"{model_name}_latest.pkl"
+            # Use type-specific directory
+            type_dir = "classifier" if model_type == "classification" else "regressor"
+            filepath = self.model_path / type_dir / f"{model_name}_latest.pkl"
         
         try:
-            model = self.models[model_name]
-            model.save_model(str(filepath))
+            model.save(str(filepath))
             
             # Also save with timestamp for versioning
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            versioned_filepath = self.model_path / f"{model_name}_{timestamp}.pkl"
-            model.save_model(str(versioned_filepath))
+            type_dir = "classifier" if model_type == "classification" else "regressor"
+            versioned_filepath = self.model_path / type_dir / f"{model_name}_{timestamp}.pkl"
+            model.save(str(versioned_filepath))
             
-            logger.info(f"Saved model {model_name} to {filepath}")
+            logger.info(f"Saved {model_type} model {model_name} to {filepath}")
             return True
             
         except Exception as e:
