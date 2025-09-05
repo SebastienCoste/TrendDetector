@@ -134,9 +134,7 @@ class AdaptiveTrendClassifier:
     def fit_initial(self,
                    vectors: List[np.ndarray],
                    trends: List[str],
-                   timestamps: List[float],
-                   velocity_features_list: Optional[List[Dict[str, float]]] = None,
-                   contextual_features_list: Optional[List[Dict[str, float]]] = None) -> None:
+                   timestamps: List[float]) -> None:
         """Initial training with batch data"""
 
         if velocity_features_list is None:
