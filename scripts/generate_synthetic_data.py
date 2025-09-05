@@ -230,10 +230,11 @@ class SyntheticDataGenerator:
 
     def save_dataset(self,
                     vectors: List[np.ndarray],
-                    trends: List[str],
+                    targets: List[Any],
                     timestamps: List[float],
                     velocity_features_list: List[Dict[str, float]],
-                    output_path: str) -> None:
+                    output_path: str,
+                    model_type: str = "classification") -> None:
         """Save dataset to files"""
 
         output_dir = Path(output_path)
