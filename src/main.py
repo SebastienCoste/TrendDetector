@@ -18,6 +18,7 @@ from .core.logging import setup_logging
 from .core.model_manager import ModelManager, initialize_model_manager
 from .core.gpu_utils import initialize_gpu
 from .api.v2 import inference, update, stats
+from .api.ui import router as ui_router
 from .api.middleware import LoggingMiddleware
 
 # Global configuration
