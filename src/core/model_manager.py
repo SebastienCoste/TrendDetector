@@ -30,24 +30,31 @@ class ModelManager:
         logger.info(f"ModelManager initialized with storage path: {self.model_path}")
         logger.info(f"Default model type: {config.model_settings.type}")
 
-    def create_model(self, model_name: str, version: Optional[str] = None) -> AdaptiveTrendClassifier:
+    def create_model(self, model_name: str, model_type: Optional[str] = None, version: Optional[str] = None) -> TrendModelInterface:
         """Create a new model instance"""
+        if model_type is None:
+            model_type = self.config.model_settings.type
+            
         if version is None:
             version = self.config.storage_config.version_format.format(
                 len(self.model_versions.get(model_name, [])) + 1
             )
         
-        model = AdaptiveTrendClassifier(
-            n_trees=self.config.model_settings.n_trees,
-            drift_threshold=self.config.model_settings.drift_threshold,
-            memory_size=self.config.model_settings.memory_size,
-            max_features=self.config.model_settings.max_features,
-            update_frequency=self.config.model_settings.update_frequency,
-            embedding_dim=self.config.model_settings.embedding_dim,
-            max_clusters=self.config.model_settings.max_clusters,
-            time_decay_hours=self.config.model_settings.time_decay_hours,
-            model_version=version
-        )
+        # Prepare model configuration
+        model_config = {
+            'n_trees': self.config.model_settings.n_trees,
+            'drift_threshold': self.config.model_settings.drift_threshold,
+            'memory_size': self.config.model_settings.memory_size,
+            'max_features': self.config.model_settings.max_features,
+            'update_frequency': self.config.model_settings.update_frequency,
+            'embedding_dim': self.config.model_settings.embedding_dim,
+            'max_clusters': self.config.model_settings.max_clusters,
+            'time_decay_hours': self.config.model_settings.time_decay_hours,
+            'output_range': self.config.model_settings.output_range,
+            'model_version': version
+        }
+        
+        model = TrendModelInterface(model_type, model_config)
         
         self.models[model_name] = model
         
@@ -56,7 +63,7 @@ class ModelManager:
         if version not in self.model_versions[model_name]:
             self.model_versions[model_name].append(version)
         
-        logger.info(f"Created model {model_name} version {version}")
+        logger.info(f"Created {model_type} model {model_name} version {version}")
         return model
 
     def load_model(self, model_name: str, filepath: Optional[str] = None) -> bool:
