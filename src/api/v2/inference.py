@@ -18,31 +18,29 @@ async def get_model_metadata(model_name: str, model_type: Optional[str] = None) 
     """Get model metadata (KServe V2 compliant)"""
     try:
         model_manager = get_model_manager()
+        
+        # Use provided model_type or default from config
+        if model_type is None:
+            model_type = model_manager.config.model_settings.type
 
         if not model_manager.is_model_loaded(model_name):
             # Try to load or create the model
-            if not model_manager.load_model(model_name):
-                model_manager.create_model(model_name)
+            if not model_manager.load_model(model_name, model_type):
+                model_manager.create_model(model_name, model_type)
 
-        return ModelMetadata(
-            name=model_name,
-            versions=model_manager.get_available_versions(model_name),
-            platform="River-AdaptiveRandomForest",
-            inputs=[
-                {
-                    "name": "embedding_vector",
-                    "datatype": "FP32",
-                    "shape": [1, 512],
-                    "description": "Content embedding vector"
-                },
-                {
-                    "name": "velocity_features",
-                    "datatype": "FP32",
-                    "shape": [1, 8],
-                    "description": "Velocity features (optional)"
-                }
-            ],
-            outputs=[
+        # Define inputs (only embedding vector as per spec)
+        inputs = [
+            {
+                "name": "embedding_vector",
+                "datatype": "FP32",
+                "shape": [1, 512],
+                "description": "Content embedding vector"
+            }
+        ]
+
+        # Define outputs based on model type
+        if model_type == "classification":
+            outputs = [
                 {
                     "name": "predicted_trend",
                     "datatype": "BYTES",
@@ -62,6 +60,30 @@ async def get_model_metadata(model_name: str, model_type: Optional[str] = None) 
                     "description": "Class probabilities [upward, downward, neutral]"
                 }
             ]
+            platform = "River-AdaptiveRandomForest-Classifier"
+        else:  # regression
+            outputs = [
+                {
+                    "name": "trend_score",
+                    "datatype": "FP32",
+                    "shape": [1],
+                    "description": "Continuous trend score [-1, 1]"
+                },
+                {
+                    "name": "confidence",
+                    "datatype": "FP32",
+                    "shape": [1],
+                    "description": "Prediction confidence"
+                }
+            ]
+            platform = "River-AdaptiveRandomForest-Regressor"
+
+        return ModelMetadata(
+            name=model_name,
+            versions=model_manager.get_available_versions(model_name),
+            platform=platform,
+            inputs=inputs,
+            outputs=outputs
         )
     except Exception as e:
         logger.error(f"Error getting model metadata: {e}")
