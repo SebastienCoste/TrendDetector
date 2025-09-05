@@ -118,32 +118,23 @@ async def infer(
 ) -> InferenceResponse:
     """Perform inference (KServe V2 compliant)"""
     try:
+        # Determine model type
+        if model_type is None:
+            model_type = request.get_model_type() or model_manager.config.model_settings.type
+
         # Validate model exists
         if not model_manager.is_model_loaded(model_name):
-            if not model_manager.load_model(model_name):
-                model_manager.create_model(model_name)
+            if not model_manager.load_model(model_name, model_type):
+                model_manager.create_model(model_name, model_type)
 
-        # Extract inputs
+        # Extract embedding vector (only input as per spec)
         embedding_vector = None
-        velocity_features = None
 
         for input_tensor in request.inputs:
             if input_tensor.name == "embedding_vector":
                 embedding_vector = np.array(input_tensor.data, dtype=np.float32)
                 validate_embedding_vector(embedding_vector)
-            elif input_tensor.name == "velocity_features":
-                velocity_data = np.array(input_tensor.data, dtype=np.float32)
-                velocity_features = {
-                    'download_velocity_1h': float(velocity_data[0]),
-                    'download_velocity_24h': float(velocity_data[1]),
-                    'like_velocity_1h': float(velocity_data[2]),
-                    'like_velocity_24h': float(velocity_data[3]),
-                    'dislike_velocity_1h': float(velocity_data[4]),
-                    'dislike_velocity_24h': float(velocity_data[5]),
-                    'rating_velocity_1h': float(velocity_data[6]),
-                    'rating_velocity_24h': float(velocity_data[7])
-                }
-                validate_velocity_features(velocity_features)
+                break
 
         if embedding_vector is None:
             raise HTTPException(
@@ -152,34 +143,54 @@ async def infer(
             )
 
         # Get prediction
-        classifier = model_manager.get_classifier(model_name)
-        result = classifier.predict_trend(embedding_vector, velocity_features)
+        model = model_manager.get_model(model_name, model_type)
+        result = model.predict(embedding_vector)
 
-        # Convert probabilities to ordered list [upward, downward, neutral]
-        prob_order = ['upward', 'downward', 'neutral']
-        prob_list = [result.probabilities.get(trend, 0.0) for trend in prob_order]
+        # Create response based on model type
+        if model_type == "classification":
+            # Convert probabilities to ordered list [upward, downward, neutral]
+            prob_order = ['upward', 'downward', 'neutral']
+            prob_list = [result.probabilities.get(trend, 0.0) for trend in prob_order]
 
-        # Create response
-        outputs = [
-            InferTensor(
-                name="predicted_trend",
-                shape=[1],
-                datatype=DataType.BYTES,
-                data=[result.predicted_trend]
-            ),
-            InferTensor(
-                name="confidence",
-                shape=[1],
-                datatype=DataType.FP32,
-                data=[result.confidence]
-            ),
-            InferTensor(
-                name="probabilities",
-                shape=[1, 3],
-                datatype=DataType.FP32,
-                data=prob_list
-            )
-        ]
+            outputs = [
+                InferTensor(
+                    name="predicted_trend",
+                    shape=[1],
+                    datatype=DataType.BYTES,
+                    data=[result.predicted_trend]
+                ),
+                InferTensor(
+                    name="confidence",
+                    shape=[1],
+                    datatype=DataType.FP32,
+                    data=[result.confidence]
+                ),
+                InferTensor(
+                    name="probabilities",
+                    shape=[1, 3],
+                    datatype=DataType.FP32,
+                    data=prob_list
+                )
+            ]
+            
+            log_msg = f"Prediction: {result.predicted_trend}, Confidence: {result.confidence:.3f}"
+        else:  # regression
+            outputs = [
+                InferTensor(
+                    name="trend_score",
+                    shape=[1],
+                    datatype=DataType.FP32,
+                    data=[result.predicted_score]
+                ),
+                InferTensor(
+                    name="confidence",
+                    shape=[1],
+                    datatype=DataType.FP32,
+                    data=[result.confidence]
+                )
+            ]
+            
+            log_msg = f"Prediction score: {result.predicted_score:.3f}, Confidence: {result.confidence:.3f}"
 
         response = InferenceResponse(
             model_name=model_name,
@@ -187,17 +198,14 @@ async def infer(
             outputs=outputs,
             parameters={
                 "prediction_method": result.method,
+                "model_type": model_type,
                 "timestamp": result.timestamp.isoformat()
             }
         )
 
         # Log prediction
         if logger.isEnabledFor(logging.INFO):
-            logger.info(
-                f"Prediction: {result.predicted_trend}, "
-                f"Confidence: {result.confidence:.3f}, "
-                f"Method: {result.method}"
-            )
+            logger.info(f"{log_msg}, Method: {result.method}")
 
         return response
 
