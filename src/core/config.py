@@ -33,6 +33,12 @@ class GPUConfig(BaseModel):
     fallback_cpu: bool = Field(default=True, description="Fallback to CPU on errors")
     memory_limit: float = Field(default=0.8, description="GPU memory usage limit")
 
+class EvaluationConfig(BaseModel):
+    regression_metrics: List[str] = Field(default=["mae", "rmse", "r2"], description="Regression evaluation metrics")
+    primary_regression_metric: str = Field(default="mae", description="Primary regression metric")
+    classification_metrics: List[str] = Field(default=["accuracy", "precision", "recall", "f1"], description="Classification evaluation metrics")
+    primary_classification_metric: str = Field(default="accuracy", description="Primary classification metric")
+
 class LoggingConfig(BaseModel):
     level: str = Field(default="INFO", description="Log level")
     file_path: str = Field(default="./logs/trend_service.log", description="Log file path")
