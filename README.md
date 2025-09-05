@@ -52,11 +52,14 @@ python -m src.main
 # Check health
 curl http://localhost:8080/health
 
-# Get model metadata
-curl http://localhost:8080/v2/models/trend_classifier
+# Get classification model metadata
+curl "http://localhost:8080/v2/models/trend_classifier?model_type=classification"
 
-# Make a prediction
-curl -X POST http://localhost:8080/v2/models/trend_classifier/infer \
+# Get regression model metadata
+curl "http://localhost:8080/v2/models/trend_regressor?model_type=regression"
+
+# Make a classification prediction
+curl -X POST "http://localhost:8080/v2/models/trend_classifier/infer?model_type=classification" \
   -H "Content-Type: application/json" \
   -d '{
     "inputs": [
@@ -66,7 +69,23 @@ curl -X POST http://localhost:8080/v2/models/trend_classifier/infer \
         "datatype": "FP32",
         "data": [/* 512 float values */]
       }
-    ]
+    ],
+    "parameters": {"model_type": "classification"}
+  }'
+
+# Make a regression prediction
+curl -X POST "http://localhost:8080/v2/models/trend_regressor/infer?model_type=regression" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "inputs": [
+      {
+        "name": "embedding_vector",
+        "shape": [512],
+        "datatype": "FP32",
+        "data": [/* 512 float values */]
+      }
+    ],
+    "parameters": {"model_type": "regression"}
   }'
 ```
 
