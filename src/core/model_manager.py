@@ -16,14 +16,19 @@ class ModelManager:
 
     def __init__(self, config: AppConfig):
         self.config = config
-        self.models: Dict[str, AdaptiveTrendClassifier] = {}
+        self.models: Dict[str, TrendModelInterface] = {}
         self.model_versions: Dict[str, List[str]] = {}
         
         # Create model storage directory
         self.model_path = Path(config.storage_config.model_path)
         self.model_path.mkdir(parents=True, exist_ok=True)
         
+        # Create type-specific directories
+        (self.model_path / "classifier").mkdir(exist_ok=True)
+        (self.model_path / "regressor").mkdir(exist_ok=True)
+        
         logger.info(f"ModelManager initialized with storage path: {self.model_path}")
+        logger.info(f"Default model type: {config.model_settings.type}")
 
     def create_model(self, model_name: str, version: Optional[str] = None) -> AdaptiveTrendClassifier:
         """Create a new model instance"""
