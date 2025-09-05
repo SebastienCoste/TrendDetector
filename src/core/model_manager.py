@@ -4,7 +4,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 
+from ..ml.model_interface import TrendModelInterface
 from ..ml.adaptive_classifier import AdaptiveTrendClassifier
+from ..ml.adaptive_regressor import AdaptiveTrendRegressor
 from .config import AppConfig
 
 logger = logging.getLogger(__name__)
