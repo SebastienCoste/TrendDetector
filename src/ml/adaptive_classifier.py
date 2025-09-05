@@ -137,11 +137,6 @@ class AdaptiveTrendClassifier:
                    timestamps: List[float]) -> None:
         """Initial training with batch data"""
 
-        if velocity_features_list is None:
-            velocity_features_list = [{}] * len(vectors)
-        if contextual_features_list is None:
-            contextual_features_list = [{}] * len(vectors)
-
         logger.info(f"Starting initial training with {len(vectors)} samples")
 
         # Add all data to memory first
@@ -150,11 +145,7 @@ class AdaptiveTrendClassifier:
 
         # Process each sample for training
         for i, (vector, label) in enumerate(zip(vectors, trends)):
-            features = self._prepare_features(
-                vector,
-                velocity_features_list[i],
-                contextual_features_list[i]
-            )
+            features = self._prepare_features(vector)
 
             # Learn from this sample
             self.classifier.learn_one(features, label)
