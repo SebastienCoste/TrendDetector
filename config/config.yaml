@@ -7,6 +7,7 @@ server_config:
   log_level: "INFO"
 
 model_settings:
+  type: "classification"  # or "regression"
   n_trees: 10
   drift_threshold: 0.01
   memory_size: 10000
@@ -15,6 +16,7 @@ model_settings:
   embedding_dim: 512
   max_clusters: 20
   time_decay_hours: 24
+  output_range: [-1, 1]
 
 storage_config:
   model_path: "./models"
