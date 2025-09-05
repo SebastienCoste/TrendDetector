@@ -67,14 +67,19 @@ class ModelMetadata(BaseModel):
 class UpdateRequest(BaseModel):
     """Custom update request for trend feedback"""
     updates: List[Dict[str, Any]] = Field(..., description="List of trend updates")
+    model_type: Optional[str] = Field(None, description="Model type override")
 
     @validator('updates')
     def validate_updates(cls, v):
-        required_fields = ['embedding_vector', 'actual_trend']
+        # Basic validation - specific fields will be validated per model type
+        required_fields = ['embedding_vector']
         for update in v:
             for field in required_fields:
                 if field not in update:
                     raise ValueError(f"Missing required field: {field}")
+            # Check for either trend or score
+            if 'actual_trend' not in update and 'actual_score' not in update:
+                raise ValueError("Missing target field: either 'actual_trend' or 'actual_score' required")
         return v
 
 class UpdateResponse(BaseModel):
