@@ -1,16 +1,18 @@
 # Trending Content Detection System
 
-A real-time machine learning service that predicts content trends using adaptive algorithms with concept drift detection.
+A real-time machine learning service that predicts content trends using adaptive algorithms with concept drift detection. Now supports both classification and regression models through a unified interface.
 
 ## Features
 
-- **Real-time trend prediction** (upward/downward/neutral)
+- **Dual-Model Support** - Both classification (upward/downward/neutral) and regression (continuous score -1 to 1)
+- **Real-time trend prediction** with configurable model types
 - **Continuous learning** with adaptive model updates
 - **Concept drift detection** using adaptive algorithms
 - **KServe V2 API compliance** for production compatibility
 - **GPU acceleration** with CPU fallback
 - **Model versioning** and checkpoint management
-- **Batch prediction and training** support
+- **Embedding-only input** (velocity features used only for target generation)
+- **Comprehensive evaluation metrics** (MAE, RMSE, R², accuracy, precision, recall, F1)
 
 ## System Architecture
 
