@@ -157,10 +157,7 @@ class AdaptiveTrendClassifier:
 
         logger.info("Initial training completed")
 
-    def predict_trend(self,
-                     content_vector: np.ndarray,
-                     velocity_features: Optional[Dict[str, float]] = None,
-                     contextual_features: Optional[Dict[str, float]] = None) -> PredictionResult:
+    def predict_trend(self, content_vector: np.ndarray) -> PredictionResult:
         """Predict trend for new content"""
 
         try:
