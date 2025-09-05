@@ -253,7 +253,7 @@ class AdaptiveTrendClassifier:
             return False
 
         # Prepare features
-        features = self._prepare_features(content_vector, velocity_features, contextual_features)
+        features = self._prepare_features(content_vector)
 
         # Update classifier
         if self.is_fitted:
