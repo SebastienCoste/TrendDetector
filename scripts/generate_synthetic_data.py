@@ -39,10 +39,10 @@ class SyntheticDataGenerator:
         else:
             return np.random.randn(dim)
 
-    def calculate_trend_from_vector_and_time(self,
-                                           vector: np.ndarray,
-                                           timestamp: float,
-                                           base_time: float) -> str:
+    def calculate_trend_score_from_vector_and_time(self,
+                                                 vector: np.ndarray,
+                                                 timestamp: float,
+                                                 base_time: float) -> float:
         """Calculate trend based on vector characteristics and time"""
 
         # Vector-based features
