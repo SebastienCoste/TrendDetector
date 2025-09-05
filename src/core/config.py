@@ -4,6 +4,7 @@ import yaml
 from pathlib import Path
 
 class ModelConfig(BaseModel):
+    type: str = Field(default="classification", description="Model type: 'classification' or 'regression'")
     n_trees: int = Field(default=10, description="Number of trees in random forest")
     drift_threshold: float = Field(default=0.01, description="ADWIN delta parameter")
     memory_size: int = Field(default=10000, description="Maximum trend history size")
@@ -12,6 +13,7 @@ class ModelConfig(BaseModel):
     embedding_dim: int = Field(default=512, description="Expected embedding dimension")
     max_clusters: int = Field(default=20, description="Maximum clusters per trend type")
     time_decay_hours: int = Field(default=24, description="Time-based similarity decay")
+    output_range: List[float] = Field(default=[-1, 1], description="Output range for regression models")
 
 class ServerConfig(BaseModel):
     host: str = Field(default="0.0.0.0", description="Server host")
