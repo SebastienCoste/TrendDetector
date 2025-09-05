@@ -190,7 +190,7 @@ class AdaptiveTrendClassifier:
                 )
 
         # Prepare features
-        features = self._prepare_features(content_vector, velocity_features, contextual_features)
+        features = self._prepare_features(content_vector)
 
         # Get prediction with probabilities
         try:
